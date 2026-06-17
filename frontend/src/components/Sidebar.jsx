@@ -1,11 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { LayoutGrid, ShieldAlert, ScrollText, LogOut, Radio } from "lucide-react";
+import { LayoutGrid, ShieldAlert, ScrollText, LogOut, Radio, Shield } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const NAV_ITEMS = [
   { to: "/", label: "Overview", icon: LayoutGrid },
   { to: "/alerts", label: "Alert Queue", icon: ShieldAlert },
   { to: "/audit", label: "Audit Log", icon: ScrollText },
+  { to: "/settings", label: "Security Settings", icon: Shield },
 ];
 
 export function Sidebar() {

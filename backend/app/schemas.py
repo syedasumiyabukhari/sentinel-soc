@@ -1,6 +1,7 @@
 """
 Pydantic schemas for request/response bodies.
 """
+import re
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, EmailStr, field_validator
@@ -14,6 +15,30 @@ class UserCreate(BaseModel):
     password: str
     full_name: Optional[str] = None
     role: str = "analyst"
+
+    @field_validator("username")
+    @classmethod
+    def username_must_be_valid(cls, v):
+        if len(v) < 3:
+            raise ValueError("username must be at least 3 characters")
+        if not re.match(r"^[a-zA-Z0-9_.-]+$", v):
+            raise ValueError("username can only contain letters, numbers, underscores, dots, and hyphens")
+        return v
+
+    @field_validator("password")
+    @classmethod
+    def password_must_be_strong(cls, v):
+        if len(v) < 8:
+            raise ValueError("password must be at least 8 characters")
+        if not re.search(r"[A-Z]", v):
+            raise ValueError("password must contain at least one uppercase letter")
+        if not re.search(r"[a-z]", v):
+            raise ValueError("password must contain at least one lowercase letter")
+        if not re.search(r"\d", v):
+            raise ValueError("password must contain at least one number")
+        if not re.search(r"[^\w\s]", v):
+            raise ValueError("password must contain at least one special character")
+        return v
 
     @field_validator("role")
     @classmethod
@@ -30,6 +55,7 @@ class UserOut(BaseModel):
     full_name: Optional[str]
     role: str
     is_active: bool
+    totp_enabled: bool
     created_at: datetime
 
     class Config:
@@ -40,6 +66,30 @@ class Token(BaseModel):
     access_token: str
     token_type: str = "bearer"
     user: UserOut
+
+
+class LoginRequiresTwoFactor(BaseModel):
+    requires_2fa: bool = True
+    two_fa_token: str  # short-lived token, exchanged for a real access token after verifying TOTP code
+
+
+class TwoFactorVerifyLogin(BaseModel):
+    two_fa_token: str
+    code: str
+
+
+class TwoFactorSetupOut(BaseModel):
+    qr_code_base64: str
+    secret: str  # shown once, for manual entry as a fallback to scanning
+
+
+class TwoFactorEnableRequest(BaseModel):
+    code: str
+
+
+class TwoFactorDisableRequest(BaseModel):
+    password: str
+    code: str
 
 
 # ---------- Alerts ----------

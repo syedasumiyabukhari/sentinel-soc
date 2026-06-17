@@ -19,5 +19,9 @@ class User(Base):
     # Roles: viewer (read-only), analyst (triage alerts), admin (full control + user mgmt)
     role = Column(String(20), nullable=False, default="analyst")
 
+    # Two-factor authentication (TOTP)
+    totp_secret = Column(String(64), nullable=True)
+    totp_enabled = Column(Boolean, default=False, nullable=False)
+
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

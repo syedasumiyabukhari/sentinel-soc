@@ -32,10 +32,28 @@ export function AuthProvider({ children }) {
 
   const signIn = useCallback(async (username, password) => {
     const data = await authApi.login(username, password);
+    if (data.requires_2fa) {
+      return { requires2fa: true, twoFaToken: data.two_fa_token };
+    }
+    localStorage.setItem("sentinel_token", data.access_token);
+    localStorage.setItem("sentinel_user", JSON.stringify(data.user));
+    setUser(data.user);
+    return { requires2fa: false, user: data.user };
+  }, []);
+
+  const verifyTwoFactor = useCallback(async (twoFaToken, code) => {
+    const data = await authApi.verifyLogin2fa(twoFaToken, code);
     localStorage.setItem("sentinel_token", data.access_token);
     localStorage.setItem("sentinel_user", JSON.stringify(data.user));
     setUser(data.user);
     return data.user;
+  }, []);
+
+  const refreshUser = useCallback(async () => {
+    const me = await authApi.getMe();
+    setUser(me);
+    localStorage.setItem("sentinel_user", JSON.stringify(me));
+    return me;
   }, []);
 
   const signUp = useCallback(async (payload) => {
@@ -55,7 +73,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, verifyTwoFactor, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

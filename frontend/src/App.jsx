@@ -4,6 +4,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { OverviewPage } from "./pages/OverviewPage";
 import { AlertQueuePage } from "./pages/AlertQueuePage";
 import { AuditLogPage } from "./pages/AuditLogPage";
+import { SettingsPage } from "./pages/SettingsPage";
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -25,6 +26,7 @@ function AppRoutes() {
       <Route path="/" element={<ProtectedRoute><OverviewPage /></ProtectedRoute>} />
       <Route path="/alerts" element={<ProtectedRoute><AlertQueuePage /></ProtectedRoute>} />
       <Route path="/audit" element={<ProtectedRoute><AuditLogPage /></ProtectedRoute>} />
+      <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
