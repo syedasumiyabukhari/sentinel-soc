@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+@theme {
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --color-bg: #0a0e14;
+  --color-surface: #121821;
+  --color-surface-raised: #161d28;
+  --color-border: #1f2937;
+  --color-border-bright: #2a3645;
+
+  --color-cyan: #00e5ff;
+  --color-cyan-dim: #00b8cc;
+  --color-text: #e6edf3;
+  --color-text-muted: #7d8a9e;
+  --color-text-faint: #4b5868;
+
+  --color-critical: #ff3b5c;
+  --color-high: #ff8c42;
+  --color-medium: #ffc857;
+  --color-low: #00e5ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  height: 100%;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-bright);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-faint);
+}
+
+.font-data {
+  font-family: var(--font-mono);
+}
+
+/* Signature element: live pulse scanline */
+@keyframes pulse-sweep {
+  0% { transform: translateX(-100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+.pulse-line {
+  position: relative;
+  overflow: hidden;
+  height: 2px;
+  background: var(--color-border);
+}
+
+.pulse-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 30%;
+  background: linear-gradient(90deg, transparent, var(--color-cyan), transparent);
+  animation: pulse-sweep 3s linear infinite;
+}
+
+@keyframes blink-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,229,255,0.5); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 4px rgba(0,229,255,0); }
+}
+
+.live-dot {
+  animation: blink-dot 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-line::after,
+  .live-dot {
+    animation: none;
+  }
+}
+
+/* Focus visibility */
+:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+}

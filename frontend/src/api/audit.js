@@ -1,0 +1,12 @@
+import api from "./client";
+
+export async function listAuditLogs(filters = {}) {
+  const params = {};
+  if (filters.action) params.action = filters.action;
+  if (filters.target_type) params.target_type = filters.target_type;
+  if (filters.limit) params.limit = filters.limit;
+  if (filters.offset) params.offset = filters.offset;
+
+  const { data } = await api.get("/api/audit-logs", { params });
+  return data;
+}
