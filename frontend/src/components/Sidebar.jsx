@@ -3,7 +3,7 @@ import { LayoutGrid, ShieldAlert, ScrollText, LogOut, Radio, Shield } from "luci
 import { useAuth } from "../context/AuthContext";
 
 const NAV_ITEMS = [
-  { to: "/", label: "Overview", icon: LayoutGrid },
+  { to: "/dashboard", label: "Overview", icon: LayoutGrid },
   { to: "/alerts", label: "Alert Queue", icon: ShieldAlert },
   { to: "/audit", label: "Audit Log", icon: ScrollText },
   { to: "/settings", label: "Security Settings", icon: Shield },
@@ -36,7 +36,6 @@ export function Sidebar() {
           <NavLink
             key={to}
             to={to}
-            end={to === "/"}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors ${
                 isActive ? "font-medium" : ""

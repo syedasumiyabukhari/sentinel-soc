@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Radio, ShieldCheck } from "lucide-react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { Radio, ShieldCheck, ArrowLeft } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 function checkPasswordStrength(password) {
@@ -18,7 +18,10 @@ function checkPasswordStrength(password) {
 export function LoginPage() {
   const { signIn, signUp, verifyTwoFactor } = useAuth();
   const navigate = useNavigate();
-  const [mode, setMode] = useState("login"); // login | register | 2fa
+  const location = useLocation();
+  const initialMode = location.pathname === "/register" ? "register" : "login";
+
+  const [mode, setMode] = useState(initialMode); // login | register | 2fa
   const [form, setForm] = useState({ username: "", password: "", email: "", full_name: "", role: "analyst" });
   const [twoFaToken, setTwoFaToken] = useState("");
   const [code, setCode] = useState("");
@@ -38,11 +41,11 @@ export function LoginPage() {
           setTwoFaToken(result.twoFaToken);
           setMode("2fa");
         } else {
-          navigate("/");
+          navigate("/dashboard");
         }
       } else if (mode === "register") {
         await signUp(form);
-        navigate("/");
+        navigate("/dashboard");
       }
     } catch (err) {
       const detail = err.response?.data?.detail;
@@ -62,7 +65,7 @@ export function LoginPage() {
     setBusy(true);
     try {
       await verifyTwoFactor(twoFaToken, code);
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.detail || "Incorrect code. Try again.");
     } finally {
@@ -72,9 +75,18 @@ export function LoginPage() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center px-4"
+      className="min-h-screen flex items-center justify-center px-4 relative"
       style={{ backgroundColor: "var(--color-bg)" }}
     >
+      <Link
+        to="/"
+        className="absolute top-6 left-6 flex items-center gap-1.5 text-xs"
+        style={{ color: "var(--color-text-faint)" }}
+      >
+        <ArrowLeft size={14} />
+        Back to home
+      </Link>
+
       <div className="w-full max-w-sm">
         <div className="flex items-center gap-2 justify-center mb-8">
           <Radio size={20} style={{ color: "var(--color-cyan)" }} className="live-dot" />
@@ -87,8 +99,12 @@ export function LoginPage() {
         </div>
 
         <div
-          className="rounded-md border p-6"
-          style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-surface)" }}
+          className="rounded-lg border p-6 shadow-2xl"
+          style={{
+            borderColor: "var(--color-border)",
+            backgroundColor: "var(--color-surface)",
+            boxShadow: "0 20px 60px -20px rgba(0,229,255,0.08)",
+          }}
         >
           {mode === "2fa" ? (
             <>
