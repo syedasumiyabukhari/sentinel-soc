@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Radio, ShieldCheck, Activity, Globe2, ScrollText, Github } from "lucide-react";
+import { Radio, ShieldCheck, Activity, Globe2, ScrollText, FolderGit2 } from "lucide-react";
 
 const DEMO_ALERTS = [
   { id: 1, severity: "critical", title: "Brute force attempt detected", ip: "185.220.101.47", type: "brute_force" },
@@ -204,7 +204,7 @@ export function LandingPage() {
           className="flex items-center gap-1.5 text-xs"
           style={{ color: "var(--color-text-muted)" }}
         >
-          <Github size={14} />
+          <FolderGit2 size={14} />
           GitHub
         </a>
       </footer>
