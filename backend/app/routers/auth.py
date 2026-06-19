@@ -44,12 +44,19 @@ def register(payload: UserCreate, request: Request, db: Session = Depends(get_db
     if existing_email:
         raise HTTPException(status_code=400, detail="An account with that email already exists")
 
+    # Role is decided server-side, never trusted from the client. The very first
+    # account on a fresh install becomes admin automatically (there is no one
+    # else yet to grant that role); every account after that defaults to the
+    # least-privileged role. Promotions happen later via an existing admin.
+    is_first_user = db.query(User).count() == 0
+    assigned_role = "admin" if is_first_user else "viewer"
+
     user = User(
         username=payload.username,
         email=payload.email,
         hashed_password=hash_password(payload.password),
         full_name=payload.full_name,
-        role=payload.role,
+        role=assigned_role,
     )
     db.add(user)
     db.commit()

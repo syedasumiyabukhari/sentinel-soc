@@ -20,13 +20,12 @@ export async function verifyLogin2fa(twoFaToken, code) {
   return data;
 }
 
-export async function register({ username, email, password, full_name, role }) {
+export async function register({ username, email, password, full_name }) {
   const { data } = await api.post("/api/auth/register", {
     username,
     email,
     password,
     full_name,
-    role,
   });
   return data;
 }

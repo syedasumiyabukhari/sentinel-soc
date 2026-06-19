@@ -20,9 +20,10 @@ export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const initialMode = location.pathname === "/register" ? "register" : "login";
+  const portal = location.state?.portal === "admin" ? "admin" : "standard";
 
   const [mode, setMode] = useState(initialMode); // login | register | 2fa
-  const [form, setForm] = useState({ username: "", password: "", email: "", full_name: "", role: "analyst" });
+  const [form, setForm] = useState({ username: "", password: "", email: "", full_name: "" });
   const [twoFaToken, setTwoFaToken] = useState("");
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
@@ -79,12 +80,12 @@ export function LoginPage() {
       style={{ backgroundColor: "var(--color-bg)" }}
     >
       <Link
-        to="/"
+        to="/login-options"
         className="absolute top-6 left-6 flex items-center gap-1.5 text-xs"
         style={{ color: "var(--color-text-faint)" }}
       >
         <ArrowLeft size={14} />
-        Back to home
+        Back
       </Link>
 
       <div className="w-full max-w-sm">
@@ -140,13 +141,23 @@ export function LoginPage() {
             </>
           ) : (
             <>
+              {portal === "admin" && mode === "login" && (
+                <div
+                  className="flex items-center gap-2 text-xs mb-3 px-2.5 py-1.5 rounded-md"
+                  style={{ backgroundColor: "rgba(217,122,159,0.1)", color: "var(--color-cyan)" }}
+                >
+                  <ShieldCheck size={13} />
+                  Admin access — a two-factor code will be required if enabled on this account.
+                </div>
+              )}
+
               <h1 className="text-base font-semibold mb-1" style={{ color: "var(--color-text)" }}>
-                {mode === "login" ? "Sign in to the console" : "Create an analyst account"}
+                {mode === "login" ? "Sign in to the console" : "Create an account"}
               </h1>
               <p className="text-sm mb-5" style={{ color: "var(--color-text-muted)" }}>
                 {mode === "login"
                   ? "Enter your credentials to access the triage queue."
-                  : "Register a new account to start triaging alerts."}
+                  : "Register a new account. New accounts start with read-only access until an admin grants more."}
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-3">
@@ -155,25 +166,6 @@ export function LoginPage() {
                   <>
                     <Input label="Email" type="email" value={form.email} onChange={(v) => setForm({ ...form, email: v })} required />
                     <Input label="Full name" value={form.full_name} onChange={(v) => setForm({ ...form, full_name: v })} />
-                    <div>
-                      <label className="text-xs uppercase tracking-wide" style={{ color: "var(--color-text-faint)" }}>
-                        Role
-                      </label>
-                      <select
-                        value={form.role}
-                        onChange={(e) => setForm({ ...form, role: e.target.value })}
-                        className="w-full mt-1 px-3 py-2 rounded-md border text-sm"
-                        style={{
-                          borderColor: "var(--color-border-bright)",
-                          backgroundColor: "var(--color-bg)",
-                          color: "var(--color-text)",
-                        }}
-                      >
-                        <option value="viewer">Viewer</option>
-                        <option value="analyst">Analyst</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                    </div>
                   </>
                 )}
                 <Input label="Password" type="password" value={form.password} onChange={(v) => setForm({ ...form, password: v })} required />

@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
 from app.core.database import Base, engine
 from app.background import alert_generation_loop
-from app.routers import auth, alerts, audit
+from app.routers import auth, alerts, audit, users
 
 logging.basicConfig(level=logging.INFO)
 
@@ -44,6 +44,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(alerts.router)
 app.include_router(audit.router)
+app.include_router(users.router)
 
 
 @app.get("/api/health")

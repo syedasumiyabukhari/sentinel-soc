@@ -1,8 +1,8 @@
 import { NavLink } from "react-router-dom";
-import { LayoutGrid, ShieldAlert, ScrollText, LogOut, Radio, Shield } from "lucide-react";
+import { LayoutGrid, ShieldAlert, ScrollText, LogOut, Radio, Shield, Users } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
-const NAV_ITEMS = [
+const BASE_NAV_ITEMS = [
   { to: "/dashboard", label: "Overview", icon: LayoutGrid },
   { to: "/alerts", label: "Alert Queue", icon: ShieldAlert },
   { to: "/audit", label: "Audit Log", icon: ScrollText },
@@ -11,6 +11,10 @@ const NAV_ITEMS = [
 
 export function Sidebar() {
   const { user, signOut } = useAuth();
+  const navItems =
+    user?.role === "admin"
+      ? [...BASE_NAV_ITEMS, { to: "/users", label: "Manage Users", icon: Users }]
+      : BASE_NAV_ITEMS;
 
   return (
     <aside
@@ -32,7 +36,7 @@ export function Sidebar() {
       <div className="pulse-line" />
 
       <nav className="flex-1 px-3 py-4 space-y-1">
-        {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+        {navItems.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}

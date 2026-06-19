@@ -14,7 +14,9 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     full_name: Optional[str] = None
-    role: str = "analyst"
+    # Note: no `role` field here by design. Role is assigned server-side in
+    # the /register endpoint (first user -> admin, everyone else -> viewer)
+    # and can only be changed afterward by an existing admin via /users/{id}/role.
 
     @field_validator("username")
     @classmethod
@@ -38,13 +40,6 @@ class UserCreate(BaseModel):
             raise ValueError("password must contain at least one number")
         if not re.search(r"[^\w\s]", v):
             raise ValueError("password must contain at least one special character")
-        return v
-
-    @field_validator("role")
-    @classmethod
-    def role_must_be_valid(cls, v):
-        if v not in ("viewer", "analyst", "admin"):
-            raise ValueError("role must be viewer, analyst, or admin")
         return v
 
 
@@ -152,3 +147,20 @@ class AuditLogOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# ---------- User management (admin only) ----------
+
+class RoleUpdateRequest(BaseModel):
+    role: str
+
+    @field_validator("role")
+    @classmethod
+    def role_must_be_valid(cls, v):
+        if v not in ("viewer", "analyst", "admin"):
+            raise ValueError("role must be viewer, analyst, or admin")
+        return v
+
+
+class UserActiveUpdateRequest(BaseModel):
+    is_active: bool

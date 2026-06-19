@@ -130,7 +130,7 @@ export function LandingPage() {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/login-options")}
               className="text-sm px-3 py-1.5"
               style={{ color: "var(--color-text-muted)" }}
             >
@@ -179,7 +179,7 @@ export function LandingPage() {
                 Get started
               </button>
               <button
-                onClick={() => navigate("/login")}
+                onClick={() => navigate("/login-options")}
                 className="px-5 py-2.5 rounded-md text-sm font-medium border"
                 style={{ borderColor: "var(--color-border-bright)", color: "var(--color-text)" }}
               >
