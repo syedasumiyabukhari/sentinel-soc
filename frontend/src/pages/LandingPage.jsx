@@ -12,10 +12,10 @@ const DEMO_ALERTS = [
 ];
 
 const SEVERITY_COLORS = {
-  critical: "#f06b80",
-  high: "#f0a86c",
-  medium: "#e6d36a",
-  low: "#f08fb0",
+  critical: "#d6453f",
+  high: "#e8732e",
+  medium: "#d9a838",
+  low: "#e8965c",
 };
 
 function useTicker(items, intervalMs = 2600) {
@@ -168,7 +168,7 @@ export function LandingPage() {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full glow-drift"
-        style={{ background: "radial-gradient(circle, rgba(240,143,176,0.16), transparent 70%)", filter: "blur(40px)" }}
+        style={{ background: "radial-gradient(circle, rgba(232,115,46,0.16), transparent 70%)", filter: "blur(40px)" }}
       />
       <div
         aria-hidden="true"
@@ -194,30 +194,47 @@ export function LandingPage() {
             <button
               onClick={() => navigate("/register")}
               className="text-sm px-4 py-1.5 rounded-md font-medium"
-              style={{ backgroundColor: "var(--color-cyan)", color: "#2a1018" }}
+              style={{ backgroundColor: "var(--color-cyan)", color: "#2a1606" }}
             >
               Get started
             </button>
           </div>
         </nav>
 
+        {/* Big centered wordmark */}
+        <div className="px-6 md:px-10 max-w-6xl mx-auto pt-8 pb-2 text-center fade-up" style={{ animationDelay: "0ms" }}>
+          <h1
+            className="font-data font-bold uppercase tracking-[0.15em]"
+            style={{
+              color: "var(--color-text)",
+              fontSize: "clamp(2.75rem, 8vw, 5.5rem)",
+              lineHeight: 1,
+            }}
+          >
+            SENTINEL
+          </h1>
+          <div className="flex items-center justify-center gap-2 mt-3">
+            <span className="w-1.5 h-1.5 rounded-full live-dot" style={{ backgroundColor: "var(--color-cyan)" }} />
+            <span
+              className="font-data text-xs uppercase tracking-widest"
+              style={{ color: "var(--color-cyan)" }}
+            >
+              SOC Triage Console
+            </span>
+          </div>
+        </div>
+
         {/* Hero */}
         <section className="px-6 md:px-10 max-w-6xl mx-auto pt-10 pb-16 md:pt-16 md:pb-24 grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <p
-              className="font-data text-xs uppercase tracking-widest mb-4 fade-up"
-              style={{ color: "var(--color-cyan)", animationDelay: "0ms" }}
-            >
-              SOC Triage Console
-            </p>
-            <h1
+            <h2
               className="text-3xl md:text-4xl font-semibold leading-tight mb-4 fade-up"
               style={{ color: "var(--color-text)", animationDelay: "80ms" }}
             >
               Security operations,
               <br />
               without the noise.
-            </h1>
+            </h2>
             <p
               className="text-base mb-7 max-w-md fade-up"
               style={{ color: "var(--color-text-muted)", animationDelay: "160ms" }}
@@ -229,7 +246,7 @@ export function LandingPage() {
               <button
                 onClick={() => navigate("/register")}
                 className="px-5 py-2.5 rounded-md text-sm font-medium"
-                style={{ backgroundColor: "var(--color-cyan)", color: "#2a1018" }}
+                style={{ backgroundColor: "var(--color-cyan)", color: "#2a1606" }}
               >
                 Get started
               </button>

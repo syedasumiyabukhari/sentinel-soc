@@ -74,7 +74,7 @@ export function AlertQueuePage() {
               onClick={handleGenerate}
               disabled={generating}
               className="flex items-center gap-2 text-sm px-3 py-2 rounded-md font-medium disabled:opacity-50"
-              style={{ backgroundColor: "var(--color-cyan)", color: "#2a1018" }}
+              style={{ backgroundColor: "var(--color-cyan)", color: "#2a1606" }}
             >
               <Plus size={15} />
               {generating ? "Generating…" : "Generate alerts"}

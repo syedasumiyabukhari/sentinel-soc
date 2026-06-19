@@ -90,7 +90,7 @@ export function OrbitVisual() {
           height: 96,
           borderColor: "var(--color-cyan)",
           backgroundColor: "var(--color-surface)",
-          boxShadow: "0 0 40px -8px rgba(240,143,176,0.35)",
+          boxShadow: "0 0 40px -8px rgba(232,115,46,0.35)",
         }}
       >
         <div

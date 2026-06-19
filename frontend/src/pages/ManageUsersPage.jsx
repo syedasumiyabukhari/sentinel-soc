@@ -123,7 +123,7 @@ export function ManageUsersPage() {
                           className="text-xs px-2 py-0.5 rounded-full"
                           style={{
                             color: u.is_active ? "var(--color-low)" : "var(--color-text-faint)",
-                            backgroundColor: u.is_active ? "rgba(240,143,176,0.1)" : "transparent",
+                            backgroundColor: u.is_active ? "rgba(232,115,46,0.1)" : "transparent",
                           }}
                         >
                           {u.is_active ? "Active" : "Deactivated"}

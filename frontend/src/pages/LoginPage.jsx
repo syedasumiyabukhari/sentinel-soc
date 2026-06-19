@@ -104,7 +104,7 @@ export function LoginPage() {
           style={{
             borderColor: "var(--color-border)",
             backgroundColor: "var(--color-surface)",
-            boxShadow: "0 20px 60px -20px rgba(240,143,176,0.12)",
+            boxShadow: "0 20px 60px -20px rgba(232,115,46,0.12)",
           }}
         >
           {mode === "2fa" ? (
@@ -133,7 +133,7 @@ export function LoginPage() {
                   type="submit"
                   disabled={busy || code.length < 6}
                   className="w-full mt-2 py-2 rounded-md text-sm font-medium transition-opacity disabled:opacity-50"
-                  style={{ backgroundColor: "var(--color-cyan)", color: "#2a1018" }}
+                  style={{ backgroundColor: "var(--color-cyan)", color: "#2a1606" }}
                 >
                   {busy ? "Verifying…" : "Verify and sign in"}
                 </button>
@@ -144,7 +144,7 @@ export function LoginPage() {
               {portal === "admin" && mode === "login" && (
                 <div
                   className="flex items-center gap-2 text-xs mb-3 px-2.5 py-1.5 rounded-md"
-                  style={{ backgroundColor: "rgba(240,143,176,0.1)", color: "var(--color-cyan)" }}
+                  style={{ backgroundColor: "rgba(232,115,46,0.1)", color: "var(--color-cyan)" }}
                 >
                   <ShieldCheck size={13} />
                   Admin access — a two-factor code will be required if enabled on this account.
@@ -213,7 +213,7 @@ export function LoginPage() {
                   type="submit"
                   disabled={busy}
                   className="w-full mt-2 py-2 rounded-md text-sm font-medium transition-opacity disabled:opacity-50"
-                  style={{ backgroundColor: "var(--color-cyan)", color: "#2a1018" }}
+                  style={{ backgroundColor: "var(--color-cyan)", color: "#2a1606" }}
                 >
                   {busy ? "Please wait…" : mode === "login" ? "Sign in" : "Create account"}
                 </button>
