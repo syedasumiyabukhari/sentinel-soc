@@ -137,10 +137,29 @@ html, body, #root {
   transform: translateY(0);
 }
 
+@keyframes orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.orbit-spin {
+  animation-name: orbit-spin;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.orbit-counter-spin {
+  animation-name: orbit-spin;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fade-up,
   .glow-drift,
-  .glow-drift-slow {
+  .glow-drift-slow,
+  .orbit-spin,
+  .orbit-counter-spin {
     animation: none;
     opacity: 1;
   }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Radio, ShieldCheck, Activity, Globe2, ScrollText, FolderGit2 } from "lucide-react";
+import { OrbitVisual } from "../components/OrbitVisual";
 
 const DEMO_ALERTS = [
   { id: 1, severity: "critical", title: "Brute force attempt detected", ip: "185.220.101.47", type: "brute_force" },
@@ -188,17 +189,29 @@ export function LandingPage() {
             </div>
           </div>
 
-          {/* Live mini alert feed - the signature element */}
+          {/* Orbit visual - the hero's signature element */}
+          <div className="fade-up" style={{ animationDelay: "320ms" }}>
+            <OrbitVisual />
+          </div>
+        </section>
+
+        <div className="pulse-line max-w-6xl mx-auto" />
+
+        {/* Live alert feed - full width, own section */}
+        <section className="px-6 md:px-10 max-w-6xl mx-auto py-14">
+          <p className="font-data text-xs uppercase tracking-widest mb-4" style={{ color: "var(--color-cyan)" }}>
+            Live alert feed
+          </p>
           <div
-            className="rounded-md border overflow-hidden fade-up"
-            style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-surface)", animationDelay: "320ms" }}
+            className="rounded-md border overflow-hidden"
+            style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-surface)" }}
           >
             <div
               className="flex items-center justify-between px-4 py-2.5 border-b"
               style={{ borderColor: "var(--color-border)" }}
             >
               <span className="font-data text-xs uppercase tracking-wide" style={{ color: "var(--color-text-faint)" }}>
-                Live alert feed
+                Recent activity
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full live-dot" style={{ backgroundColor: "var(--color-cyan)" }} />
