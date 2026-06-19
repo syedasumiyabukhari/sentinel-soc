@@ -4,24 +4,24 @@
   --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
   --font-sans: "Inter", system-ui, sans-serif;
 
-  --color-bg: #161312;
-  --color-surface: #1f1a18;
-  --color-surface-raised: #251f1c;
-  --color-border: #332b27;
-  --color-border-bright: #453a34;
+  --color-bg: #1a1614;
+  --color-surface: #251f1c;
+  --color-surface-raised: #2d2622;
+  --color-border: #3d332d;
+  --color-border-bright: #524339;
 
   /* --color-cyan is the legacy variable name kept for compatibility with
-     existing components; it now holds the rose accent color, not cyan. */
-  --color-cyan: #d97a9f;
-  --color-cyan-dim: #b8627f;
-  --color-text: #ede4e0;
-  --color-text-muted: #a08f86;
-  --color-text-faint: #6b5d56;
+     existing components; it now holds a brighter rose accent color. */
+  --color-cyan: #f08fb0;
+  --color-cyan-dim: #d97a9f;
+  --color-text: #f5ede9;
+  --color-text-muted: #b3a098;
+  --color-text-faint: #7d6c63;
 
-  --color-critical: #e8556b;
-  --color-high: #e8965c;
-  --color-medium: #d9c45c;
-  --color-low: #d97a9f;
+  --color-critical: #f06b80;
+  --color-high: #f0a86c;
+  --color-medium: #e6d36a;
+  --color-low: #f08fb0;
 }
 
 * {
@@ -80,8 +80,8 @@ html, body, #root {
 }
 
 @keyframes blink-dot {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(217,122,159,0.5); }
-  50% { opacity: 0.6; box-shadow: 0 0 0 4px rgba(217,122,159,0); }
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(240,143,176,0.5); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 4px rgba(240,143,176,0); }
 }
 
 .live-dot {

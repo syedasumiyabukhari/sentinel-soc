@@ -12,10 +12,10 @@ const DEMO_ALERTS = [
 ];
 
 const SEVERITY_COLORS = {
-  critical: "#e8556b",
-  high: "#e8965c",
-  medium: "#d9c45c",
-  low: "#d97a9f",
+  critical: "#f06b80",
+  high: "#f0a86c",
+  medium: "#e6d36a",
+  low: "#f08fb0",
 };
 
 function useTicker(items, intervalMs = 2600) {
@@ -86,6 +86,60 @@ const FEATURES = [
   },
 ];
 
+const HOW_IT_WORKS = [
+  {
+    title: "Detect and score",
+    body: "Incoming signals — failed logins, port scans, brute force attempts, impossible travel — are scored by a rule-based engine and bucketed by severity automatically.",
+  },
+  {
+    title: "Enrich with context",
+    body: "Source IPs are checked against AbuseIPDB for abuse confidence scores and TOR exit node flags, so analysts see risk context before they open the alert.",
+  },
+  {
+    title: "Triage and close",
+    body: "Alerts move through New, Investigating, Escalated, and Closed, with every transition written to an audit log — actor, timestamp, and detail.",
+  },
+];
+
+const TECH_STACK = [
+  "FastAPI",
+  "React",
+  "SQLAlchemy",
+  "JWT + RBAC",
+  "TOTP 2FA",
+  "AbuseIPDB API",
+  "Tailwind CSS",
+];
+
+function HowItWorksStep({ step, index, delayMs }) {
+  const [ref, visible] = useRevealOnScroll();
+  return (
+    <div
+      ref={ref}
+      className={`rounded-md border p-5 reveal-on-scroll ${visible ? "is-visible" : ""}`}
+      style={{
+        borderColor: "var(--color-border)",
+        backgroundColor: "var(--color-surface)",
+        transitionDelay: visible ? `${delayMs}ms` : "0ms",
+      }}
+    >
+      <span
+        className="font-data text-xs inline-flex items-center justify-center rounded-full mb-3"
+        style={{
+          width: 24,
+          height: 24,
+          color: "var(--color-cyan)",
+          border: "1px solid var(--color-cyan)",
+        }}
+      >
+        {index}
+      </span>
+      <h3 className="text-sm font-medium mb-1.5" style={{ color: "var(--color-text)" }}>{step.title}</h3>
+      <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>{step.body}</p>
+    </div>
+  );
+}
+
 function FeatureCard({ icon: Icon, title, body, delayMs }) {
   const [ref, visible] = useRevealOnScroll();
   return (
@@ -114,7 +168,7 @@ export function LandingPage() {
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full glow-drift"
-        style={{ background: "radial-gradient(circle, rgba(217,122,159,0.16), transparent 70%)", filter: "blur(40px)" }}
+        style={{ background: "radial-gradient(circle, rgba(240,143,176,0.16), transparent 70%)", filter: "blur(40px)" }}
       />
       <div
         aria-hidden="true"
@@ -258,6 +312,43 @@ export function LandingPage() {
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-5">
             {FEATURES.map(({ icon, title, body }, idx) => (
               <FeatureCard key={title} icon={icon} title={title} body={body} delayMs={idx * 90} />
+            ))}
+          </div>
+        </section>
+
+        <div className="pulse-line max-w-6xl mx-auto" />
+
+        {/* How it works */}
+        <section className="px-6 md:px-10 max-w-6xl mx-auto py-14">
+          <p className="font-data text-xs uppercase tracking-widest mb-2" style={{ color: "var(--color-cyan)" }}>
+            How it works
+          </p>
+          <h2 className="text-2xl font-semibold mb-8" style={{ color: "var(--color-text)" }}>
+            From raw signal to a closed incident
+          </h2>
+          <div className="grid sm:grid-cols-3 gap-6">
+            {HOW_IT_WORKS.map((step, idx) => (
+              <HowItWorksStep key={step.title} step={step} index={idx + 1} delayMs={idx * 100} />
+            ))}
+          </div>
+        </section>
+
+        <div className="pulse-line max-w-6xl mx-auto" />
+
+        {/* Tech stack */}
+        <section className="px-6 md:px-10 max-w-6xl mx-auto py-14">
+          <p className="font-data text-xs uppercase tracking-widest mb-6" style={{ color: "var(--color-cyan)" }}>
+            Built with
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {TECH_STACK.map((tech) => (
+              <span
+                key={tech}
+                className="font-data text-xs px-3 py-1.5 rounded-full border"
+                style={{ borderColor: "var(--color-border-bright)", color: "var(--color-text-muted)" }}
+              >
+                {tech}
+              </span>
             ))}
           </div>
         </section>

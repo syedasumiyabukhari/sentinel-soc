@@ -43,10 +43,10 @@ export function OverviewPage() {
 
   const severityData = stats
     ? [
-        { name: "Critical", value: stats.by_severity.critical, color: "#e8556b" },
-        { name: "High", value: stats.by_severity.high, color: "#e8965c" },
-        { name: "Medium", value: stats.by_severity.medium, color: "#d9c45c" },
-        { name: "Low", value: stats.by_severity.low, color: "#d97a9f" },
+        { name: "Critical", value: stats.by_severity.critical, color: "#f06b80" },
+        { name: "High", value: stats.by_severity.high, color: "#f0a86c" },
+        { name: "Medium", value: stats.by_severity.medium, color: "#e6d36a" },
+        { name: "Low", value: stats.by_severity.low, color: "#f08fb0" },
       ]
     : [];
 

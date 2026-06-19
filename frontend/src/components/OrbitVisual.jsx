@@ -1,32 +1,35 @@
-import { ShieldCheck, Globe2, ScrollText, Activity, Server, Lock } from "lucide-react";
-
 /**
- * A central "Sentinel" hub with capability nodes orbiting it on staggered
- * rings, each at a different radius/speed so the motion doesn't feel
- * mechanically uniform. Pure CSS animation (transform + opacity only),
- * respects prefers-reduced-motion via the .orbit-spin rule in index.css.
+ * A central "Sentinel" hub with project-themed emoji orbiting it on two
+ * rings, each node spinning at its own radius, speed, and direction so
+ * the motion reads as organic rather than a uniform clock mechanism.
+ *
+ * The 0x0 wrapper-div rotation trick needs `overflow: visible` explicitly -
+ * without it, a zero-size container clips its children and the orbiting
+ * nodes silently disappear even though they're animating correctly in the DOM.
  */
 const ORBIT_NODES = [
-  { icon: ShieldCheck, label: "Severity scoring", ring: 1, angle: 0, duration: 22 },
-  { icon: Globe2, label: "IP reputation", ring: 2, angle: 60, duration: 30 },
-  { icon: ScrollText, label: "Audit trail", ring: 1, angle: 150, duration: 22 },
-  { icon: Activity, label: "Triage workflow", ring: 2, angle: 210, duration: 30 },
-  { icon: Server, label: "Alert sources", ring: 1, angle: 270, duration: 22 },
-  { icon: Lock, label: "2FA / auth", ring: 2, angle: 330, duration: 30 },
+  { emoji: "🛡️", label: "Severity scoring", ring: 1, angle: 0, duration: 18, direction: "normal" },
+  { emoji: "🌐", label: "IP reputation", ring: 2, angle: 50, duration: 26, direction: "reverse" },
+  { emoji: "📜", label: "Audit trail", ring: 1, angle: 140, duration: 21, direction: "reverse" },
+  { emoji: "📡", label: "Triage workflow", ring: 2, angle: 200, duration: 24, direction: "normal" },
+  { emoji: "🖥️", label: "Alert sources", ring: 1, angle: 250, duration: 16, direction: "normal" },
+  { emoji: "🔒", label: "2FA / auth", ring: 2, angle: 320, duration: 29, direction: "reverse" },
 ];
 
 const RING_RADIUS = { 1: 92, 2: 142 };
 
-function OrbitNode({ icon: Icon, label, ring, angle, duration }) {
+function OrbitNode({ emoji, label, ring, angle, duration, direction }) {
   const radius = RING_RADIUS[ring];
+  const counterDirection = direction === "reverse" ? "normal" : "reverse";
   return (
     <div
       className="absolute top-1/2 left-1/2 orbit-spin"
       style={{
         width: 0,
         height: 0,
+        overflow: "visible",
         animationDuration: `${duration}s`,
-        animationDirection: ring === 2 ? "reverse" : "normal",
+        animationDirection: direction,
         transform: `rotate(${angle}deg)`,
       }}
     >
@@ -35,8 +38,9 @@ function OrbitNode({ icon: Icon, label, ring, angle, duration }) {
         style={{
           width: 0,
           height: 0,
+          overflow: "visible",
           animationDuration: `${duration}s`,
-          animationDirection: ring === 2 ? "normal" : "reverse",
+          animationDirection: counterDirection,
           transform: `translateX(${radius}px)`,
         }}
       >
@@ -45,12 +49,15 @@ function OrbitNode({ icon: Icon, label, ring, angle, duration }) {
           style={{
             width: 38,
             height: 38,
+            fontSize: 18,
             borderColor: "var(--color-border-bright)",
             backgroundColor: "var(--color-surface-raised)",
           }}
           title={label}
+          role="img"
+          aria-label={label}
         >
-          <Icon size={16} style={{ color: "var(--color-cyan)" }} />
+          {emoji}
         </div>
       </div>
     </div>
@@ -83,7 +90,7 @@ export function OrbitVisual() {
           height: 96,
           borderColor: "var(--color-cyan)",
           backgroundColor: "var(--color-surface)",
-          boxShadow: "0 0 40px -8px rgba(217,122,159,0.35)",
+          boxShadow: "0 0 40px -8px rgba(240,143,176,0.35)",
         }}
       >
         <div

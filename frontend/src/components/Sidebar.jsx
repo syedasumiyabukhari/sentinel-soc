@@ -47,7 +47,7 @@ export function Sidebar() {
             }
             style={({ isActive }) => ({
               color: isActive ? "var(--color-cyan)" : "var(--color-text-muted)",
-              backgroundColor: isActive ? "rgba(217,122,159,0.1)" : "transparent",
+              backgroundColor: isActive ? "rgba(240,143,176,0.1)" : "transparent",
             })}
           >
             <Icon size={16} />
