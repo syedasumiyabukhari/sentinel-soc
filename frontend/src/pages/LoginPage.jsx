@@ -103,7 +103,7 @@ export function LoginPage() {
           style={{
             borderColor: "var(--color-border)",
             backgroundColor: "var(--color-surface)",
-            boxShadow: "0 20px 60px -20px rgba(0,229,255,0.08)",
+            boxShadow: "0 20px 60px -20px rgba(217,122,159,0.12)",
           }}
         >
           {mode === "2fa" ? (
@@ -132,7 +132,7 @@ export function LoginPage() {
                   type="submit"
                   disabled={busy || code.length < 6}
                   className="w-full mt-2 py-2 rounded-md text-sm font-medium transition-opacity disabled:opacity-50"
-                  style={{ backgroundColor: "var(--color-cyan)", color: "#001318" }}
+                  style={{ backgroundColor: "var(--color-cyan)", color: "#2a1018" }}
                 >
                   {busy ? "Verifying…" : "Verify and sign in"}
                 </button>
@@ -221,7 +221,7 @@ export function LoginPage() {
                   type="submit"
                   disabled={busy}
                   className="w-full mt-2 py-2 rounded-md text-sm font-medium transition-opacity disabled:opacity-50"
-                  style={{ backgroundColor: "var(--color-cyan)", color: "#001318" }}
+                  style={{ backgroundColor: "var(--color-cyan)", color: "#2a1018" }}
                 >
                   {busy ? "Please wait…" : mode === "login" ? "Sign in" : "Create account"}
                 </button>

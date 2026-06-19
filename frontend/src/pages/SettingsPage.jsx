@@ -166,7 +166,7 @@ export function SettingsPage() {
                   type="submit"
                   disabled={busy || code.length < 6}
                   className="text-xs px-3 py-2 rounded-md font-medium disabled:opacity-50"
-                  style={{ backgroundColor: "var(--color-cyan)", color: "#001318" }}
+                  style={{ backgroundColor: "var(--color-cyan)", color: "#2a1018" }}
                 >
                   Confirm
                 </button>

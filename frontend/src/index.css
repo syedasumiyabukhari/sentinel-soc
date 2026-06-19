@@ -4,22 +4,24 @@
   --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
   --font-sans: "Inter", system-ui, sans-serif;
 
-  --color-bg: #0a0e14;
-  --color-surface: #121821;
-  --color-surface-raised: #161d28;
-  --color-border: #1f2937;
-  --color-border-bright: #2a3645;
+  --color-bg: #161312;
+  --color-surface: #1f1a18;
+  --color-surface-raised: #251f1c;
+  --color-border: #332b27;
+  --color-border-bright: #453a34;
 
-  --color-cyan: #00e5ff;
-  --color-cyan-dim: #00b8cc;
-  --color-text: #e6edf3;
-  --color-text-muted: #7d8a9e;
-  --color-text-faint: #4b5868;
+  /* --color-cyan is the legacy variable name kept for compatibility with
+     existing components; it now holds the rose accent color, not cyan. */
+  --color-cyan: #d97a9f;
+  --color-cyan-dim: #b8627f;
+  --color-text: #ede4e0;
+  --color-text-muted: #a08f86;
+  --color-text-faint: #6b5d56;
 
-  --color-critical: #ff3b5c;
-  --color-high: #ff8c42;
-  --color-medium: #ffc857;
-  --color-low: #00e5ff;
+  --color-critical: #e8556b;
+  --color-high: #e8965c;
+  --color-medium: #d9c45c;
+  --color-low: #d97a9f;
 }
 
 * {
@@ -78,8 +80,8 @@ html, body, #root {
 }
 
 @keyframes blink-dot {
-  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,229,255,0.5); }
-  50% { opacity: 0.6; box-shadow: 0 0 0 4px rgba(0,229,255,0); }
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(217,122,159,0.5); }
+  50% { opacity: 0.6; box-shadow: 0 0 0 4px rgba(217,122,159,0); }
 }
 
 .live-dot {
@@ -97,4 +99,54 @@ html, body, #root {
 :focus-visible {
   outline: 2px solid var(--color-cyan);
   outline-offset: 2px;
+}
+
+/* Landing page entrance + ambient motion */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-up {
+  opacity: 0;
+  animation: fade-up 0.7s ease-out forwards;
+}
+
+@keyframes drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(3%, -4%) scale(1.08); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+.glow-drift {
+  animation: drift 16s ease-in-out infinite;
+}
+
+.glow-drift-slow {
+  animation: drift 22s ease-in-out infinite reverse;
+}
+
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-up,
+  .glow-drift,
+  .glow-drift-slow {
+    animation: none;
+    opacity: 1;
+  }
+  .reveal-on-scroll {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
