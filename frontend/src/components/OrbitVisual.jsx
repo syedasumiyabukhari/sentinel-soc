@@ -1,3 +1,5 @@
+import { Radio } from "lucide-react";
+
 /**
  * A central "Sentinel" hub with project-themed emoji orbiting it on two
  * rings, each node spinning at its own radius, speed, and direction so
@@ -23,8 +25,11 @@ function OrbitNode({ emoji, label, ring, angle, duration, direction }) {
   const counterDirection = direction === "reverse" ? "normal" : "reverse";
   return (
     <div
-      className="absolute top-1/2 left-1/2 orbit-spin"
+      className="orbit-spin"
       style={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
         width: 0,
         height: 0,
         overflow: "visible",
@@ -34,8 +39,13 @@ function OrbitNode({ emoji, label, ring, angle, duration, direction }) {
       }}
     >
       <div
-        className="absolute flex flex-col items-center gap-1 orbit-counter-spin"
+        className="orbit-counter-spin"
         style={{
+          position: "absolute",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: 4,
           width: 0,
           height: 0,
           overflow: "visible",
@@ -45,12 +55,16 @@ function OrbitNode({ emoji, label, ring, angle, duration, direction }) {
         }}
       >
         <div
-          className="flex items-center justify-center rounded-full border shrink-0"
           style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
             width: 38,
             height: 38,
             fontSize: 18,
-            borderColor: "var(--color-border-bright)",
+            borderRadius: "50%",
+            border: "1px solid var(--color-border-bright)",
             backgroundColor: "var(--color-surface-raised)",
           }}
           title={label}
@@ -66,15 +80,25 @@ function OrbitNode({ emoji, label, ring, angle, duration, direction }) {
 
 export function OrbitVisual() {
   return (
-    <div className="relative flex items-center justify-center" style={{ height: 340 }}>
+    <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", height: 340 }}>
       {/* Static orbit rings */}
       <div
-        className="absolute rounded-full border"
-        style={{ width: RING_RADIUS[1] * 2, height: RING_RADIUS[1] * 2, borderColor: "var(--color-border)" }}
+        style={{
+          position: "absolute",
+          borderRadius: "50%",
+          border: "1px solid var(--color-border)",
+          width: RING_RADIUS[1] * 2,
+          height: RING_RADIUS[1] * 2,
+        }}
       />
       <div
-        className="absolute rounded-full border"
-        style={{ width: RING_RADIUS[2] * 2, height: RING_RADIUS[2] * 2, borderColor: "var(--color-border)" }}
+        style={{
+          position: "absolute",
+          borderRadius: "50%",
+          border: "1px solid var(--color-border)",
+          width: RING_RADIUS[2] * 2,
+          height: RING_RADIUS[2] * 2,
+        }}
       />
 
       {/* Orbiting capability nodes */}
@@ -84,22 +108,35 @@ export function OrbitVisual() {
 
       {/* Central hub */}
       <div
-        className="relative flex flex-col items-center justify-center rounded-full border z-10"
         style={{
+          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: "50%",
+          zIndex: 10,
           width: 96,
           height: 96,
-          borderColor: "var(--color-cyan)",
+          border: "1px solid var(--color-cyan)",
           backgroundColor: "var(--color-surface)",
           boxShadow: "0 0 40px -8px rgba(232,115,46,0.35)",
         }}
       >
-        <div
-          className="w-2 h-2 rounded-full live-dot mb-1"
-          style={{ backgroundColor: "var(--color-cyan)" }}
+        <Radio
+          size={20}
+          className="live-dot"
+          style={{ color: "var(--color-cyan)", marginBottom: 4 }}
         />
         <span
-          className="font-data text-[10px] font-semibold tracking-widest uppercase"
-          style={{ color: "var(--color-text)" }}
+          className="font-data"
+          style={{
+            fontSize: 10,
+            fontWeight: 600,
+            letterSpacing: "0.15em",
+            textTransform: "uppercase",
+            color: "var(--color-text)",
+          }}
         >
           Sentinel
         </span>
