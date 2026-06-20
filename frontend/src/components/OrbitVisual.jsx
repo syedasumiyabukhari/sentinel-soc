@@ -36,7 +36,12 @@ function OrbitNode({ emoji, label, ring, angle, duration, direction }) {
         zIndex: 5,
         animationDuration: `${duration}s`,
         animationDirection: direction,
-        transform: `rotate(${angle}deg)`,
+        // The CSS animation drives `transform: rotate()` directly (see
+        // .orbit-spin keyframes). A static inline `transform` here would be
+        // clobbered the instant the animation starts, so the per-node
+        // starting angle is passed as a custom property and read inside
+        // the keyframes instead (rotate(calc(var(--start-angle) + ...))).
+        "--start-angle": `${angle}deg`,
       }}
     >
       <div
@@ -53,7 +58,11 @@ function OrbitNode({ emoji, label, ring, angle, duration, direction }) {
           zIndex: 5,
           animationDuration: `${duration}s`,
           animationDirection: counterDirection,
-          transform: `translateX(${radius}px)`,
+          // Same issue one level down: the counter-spin animation also
+          // drives `transform: rotate()`, so the radius offset (which needs
+          // translateX, not rotate) is likewise passed as a custom property
+          // and composed inside the keyframes via translate + rotate together.
+          "--orbit-radius": `${radius}px`,
         }}
       >
         <div
