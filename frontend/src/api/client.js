@@ -18,9 +18,13 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      const hadToken = !!localStorage.getItem("sentinel_token");
       localStorage.removeItem("sentinel_token");
       localStorage.removeItem("sentinel_user");
-      if (window.location.pathname !== "/login") {
+      if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {
+        if (hadToken) {
+          sessionStorage.setItem("sentinel_session_expired", "1");
+        }
         window.location.href = "/login";
       }
     }

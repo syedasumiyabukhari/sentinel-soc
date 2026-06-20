@@ -154,12 +154,22 @@ html, body, #root {
   animation-iteration-count: infinite;
 }
 
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.9; }
+}
+
+.skeleton-pulse {
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fade-up,
   .glow-drift,
   .glow-drift-slow,
   .orbit-spin,
-  .orbit-counter-spin {
+  .orbit-counter-spin,
+  .skeleton-pulse {
     animation: none;
     opacity: 1;
   }

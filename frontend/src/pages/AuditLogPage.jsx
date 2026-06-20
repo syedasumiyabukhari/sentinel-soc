@@ -1,5 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { ScrollText } from "lucide-react";
 import { Sidebar } from "../components/Sidebar";
+import { SkeletonTableRows } from "../components/Skeleton";
+import { ErrorState } from "../components/ErrorState";
+import { EmptyState } from "../components/EmptyState";
 import * as auditApi from "../api/audit";
 
 const ACTION_COLORS = {
@@ -8,18 +12,37 @@ const ACTION_COLORS = {
   alerts_generated: "var(--color-text-muted)",
   alert_status_change: "var(--color-medium)",
   alert_assigned: "var(--color-low)",
+  role_changed: "var(--color-high)",
+  user_activated: "var(--color-low)",
+  user_deactivated: "var(--color-critical)",
+  "2fa_enabled": "var(--color-cyan)",
+  "2fa_disabled": "var(--color-critical)",
 };
 
 export function AuditLogPage() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const load = useCallback(() => {
+    setLoading(true);
+    setError(null);
+    auditApi
+      .listAuditLogs({ limit: 200 })
+      .then(setLogs)
+      .catch((err) => {
+        setError(
+          err.response
+            ? `The server responded with an error (${err.response.status}).`
+            : "Couldn't reach the backend. Is it running?"
+        );
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   useEffect(() => {
-    auditApi.listAuditLogs({ limit: 200 }).then((data) => {
-      setLogs(data);
-      setLoading(false);
-    });
-  }, []);
+    load();
+  }, [load]);
 
   return (
     <div className="flex">
@@ -32,10 +55,16 @@ export function AuditLogPage() {
           Read-only record of authentication and triage actions.
         </p>
 
-        {loading ? (
-          <p className="text-sm" style={{ color: "var(--color-text-faint)" }}>Loading…</p>
+        {error ? (
+          <ErrorState message="Couldn't load the audit log." detail={error} onRetry={load} />
+        ) : loading ? (
+          <SkeletonTableRows rows={6} columns={3} />
         ) : logs.length === 0 ? (
-          <p className="text-sm" style={{ color: "var(--color-text-faint)" }}>No audit events recorded yet.</p>
+          <EmptyState
+            icon={ScrollText}
+            title="No audit events recorded yet"
+            body="Actions like logins, alert status changes, and role updates will appear here as they happen."
+          />
         ) : (
           <div
             className="rounded-md border divide-y"

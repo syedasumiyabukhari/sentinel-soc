@@ -4,23 +4,36 @@ import { Sidebar } from "../components/Sidebar";
 import { StatTile } from "../components/StatTile";
 import { AlertTable } from "../components/AlertTable";
 import { AlertDetailPanel } from "../components/AlertDetailPanel";
+import { SkeletonStatTile, SkeletonTableRows, Skeleton } from "../components/Skeleton";
+import { ErrorState } from "../components/ErrorState";
 import * as alertsApi from "../api/alerts";
 
 export function OverviewPage() {
   const [stats, setStats] = useState(null);
   const [recent, setRecent] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selected, setSelected] = useState(null);
   const [updating, setUpdating] = useState(false);
 
   const load = useCallback(async () => {
-    const [statsData, alertsData] = await Promise.all([
-      alertsApi.getStats(),
-      alertsApi.listAlerts({ limit: 8 }),
-    ]);
-    setStats(statsData);
-    setRecent(alertsData);
-    setLoading(false);
+    setError(null);
+    try {
+      const [statsData, alertsData] = await Promise.all([
+        alertsApi.getStats(),
+        alertsApi.listAlerts({ limit: 8 }),
+      ]);
+      setStats(statsData);
+      setRecent(alertsData);
+    } catch (err) {
+      setError(
+        err.response
+          ? `The server responded with an error (${err.response.status}).`
+          : "Couldn't reach the backend. Is it running?"
+      );
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -65,8 +78,39 @@ export function OverviewPage() {
           </div>
         </div>
 
-        {loading ? (
-          <p className="text-sm" style={{ color: "var(--color-text-faint)" }}>Loading…</p>
+        {error ? (
+          <ErrorState message="Couldn't load the dashboard." detail={error} onRetry={load} />
+        ) : loading ? (
+          <>
+            <div className="flex gap-3 mb-6">
+              <SkeletonStatTile />
+              <SkeletonStatTile />
+              <SkeletonStatTile />
+              <SkeletonStatTile />
+            </div>
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <div
+                className="col-span-2 rounded-md border p-4"
+                style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-surface)" }}
+              >
+                <Skeleton height={11} width={140} className="mb-4" />
+                <Skeleton height={150} />
+              </div>
+              <div
+                className="rounded-md border p-4"
+                style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-surface)" }}
+              >
+                <Skeleton height={11} width={100} className="mb-4" />
+                <div className="space-y-2.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Skeleton key={i} height={12} />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <Skeleton height={11} width={100} className="mb-2" />
+            <SkeletonTableRows rows={5} columns={5} />
+          </>
         ) : (
           <>
             <div className="flex gap-3 mb-6">

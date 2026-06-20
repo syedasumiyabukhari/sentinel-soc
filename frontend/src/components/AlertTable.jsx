@@ -1,5 +1,7 @@
 import { SeverityBadge, SeverityEdge } from "./SeverityBadge";
 import { StatusPill } from "./StatusPill";
+import { SkeletonTableRows } from "./Skeleton";
+import { ShieldOff } from "lucide-react";
 
 function timeAgo(dateStr) {
   const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
@@ -11,11 +13,7 @@ function timeAgo(dateStr) {
 
 export function AlertTable({ alerts, onSelect, loading }) {
   if (loading) {
-    return (
-      <div className="py-16 text-center text-sm" style={{ color: "var(--color-text-faint)" }}>
-        Loading alerts…
-      </div>
-    );
+    return <SkeletonTableRows rows={6} columns={5} />;
   }
 
   if (!alerts.length) {
@@ -24,6 +22,7 @@ export function AlertTable({ alerts, onSelect, loading }) {
         className="py-16 text-center rounded-md border"
         style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-surface)" }}
       >
+        <ShieldOff size={20} style={{ color: "var(--color-text-faint)" }} className="mx-auto mb-2" />
         <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
           No alerts match these filters.
         </p>

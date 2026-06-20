@@ -1,5 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { Users } from "lucide-react";
 import { Sidebar } from "../components/Sidebar";
+import { SkeletonTableRows } from "../components/Skeleton";
+import { ErrorState } from "../components/ErrorState";
+import { EmptyState } from "../components/EmptyState";
 import { useAuth } from "../context/AuthContext";
 import * as usersApi from "../api/users";
 
@@ -9,38 +13,45 @@ export function ManageUsersPage() {
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
+  const [actionError, setActionError] = useState("");
   const [busyId, setBusyId] = useState(null);
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setLoading(true);
+    setLoadError("");
     usersApi
       .listUsers()
       .then(setUsers)
-      .catch((err) => setError(err.response?.data?.detail || "Could not load users."))
+      .catch((err) => setLoadError(err.response?.data?.detail || "Could not load users."))
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    load();
+  }, [load]);
+
   async function handleRoleChange(userId, newRole) {
-    setError("");
+    setActionError("");
     setBusyId(userId);
     try {
       const updated = await usersApi.updateUserRole(userId, newRole);
       setUsers((prev) => prev.map((u) => (u.id === userId ? updated : u)));
     } catch (err) {
-      setError(err.response?.data?.detail || "Could not update role.");
+      setActionError(err.response?.data?.detail || "Could not update role.");
     } finally {
       setBusyId(null);
     }
   }
 
   async function handleActiveToggle(userId, isActive) {
-    setError("");
+    setActionError("");
     setBusyId(userId);
     try {
       const updated = await usersApi.updateUserActive(userId, isActive);
       setUsers((prev) => prev.map((u) => (u.id === userId ? updated : u)));
     } catch (err) {
-      setError(err.response?.data?.detail || "Could not update account status.");
+      setActionError(err.response?.data?.detail || "Could not update account status.");
     } finally {
       setBusyId(null);
     }
@@ -57,12 +68,16 @@ export function ManageUsersPage() {
           Promote, demote, or deactivate accounts. New accounts start as Viewer until granted more access.
         </p>
 
-        {error && (
-          <p className="text-xs mb-4" style={{ color: "var(--color-critical)" }}>{error}</p>
+        {actionError && (
+          <p className="text-xs mb-4" style={{ color: "var(--color-critical)" }}>{actionError}</p>
         )}
 
-        {loading ? (
-          <p className="text-sm" style={{ color: "var(--color-text-faint)" }}>Loading…</p>
+        {loadError ? (
+          <ErrorState message="Couldn't load users." detail={loadError} onRetry={load} />
+        ) : loading ? (
+          <SkeletonTableRows rows={4} columns={5} />
+        ) : users.length === 0 ? (
+          <EmptyState icon={Users} title="No accounts found" />
         ) : (
           <div
             className="rounded-md border overflow-hidden"

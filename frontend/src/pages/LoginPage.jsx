@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Radio, ShieldCheck, ArrowLeft } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
@@ -28,6 +28,13 @@ export function LoginPage() {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (sessionStorage.getItem("sentinel_session_expired")) {
+      setError("Your session expired. Please sign in again.");
+      sessionStorage.removeItem("sentinel_session_expired");
+    }
+  }, []);
 
   const strength = checkPasswordStrength(form.password);
 

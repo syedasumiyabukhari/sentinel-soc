@@ -33,6 +33,7 @@ function OrbitNode({ emoji, label, ring, angle, duration, direction }) {
         width: 0,
         height: 0,
         overflow: "visible",
+        zIndex: 5,
         animationDuration: `${duration}s`,
         animationDirection: direction,
         transform: `rotate(${angle}deg)`,
@@ -49,6 +50,7 @@ function OrbitNode({ emoji, label, ring, angle, duration, direction }) {
           width: 0,
           height: 0,
           overflow: "visible",
+          zIndex: 5,
           animationDuration: `${duration}s`,
           animationDirection: counterDirection,
           transform: `translateX(${radius}px)`,
@@ -56,6 +58,7 @@ function OrbitNode({ emoji, label, ring, angle, duration, direction }) {
       >
         <div
           style={{
+            position: "relative",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -63,6 +66,7 @@ function OrbitNode({ emoji, label, ring, angle, duration, direction }) {
             width: 38,
             height: 38,
             fontSize: 18,
+            lineHeight: 1,
             borderRadius: "50%",
             border: "1px solid var(--color-border-bright)",
             backgroundColor: "var(--color-surface-raised)",

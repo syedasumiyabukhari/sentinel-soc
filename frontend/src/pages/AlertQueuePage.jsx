@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { Sidebar } from "../components/Sidebar";
 import { AlertTable } from "../components/AlertTable";
 import { AlertDetailPanel } from "../components/AlertDetailPanel";
+import { ErrorState } from "../components/ErrorState";
 import { useAuth } from "../context/AuthContext";
 import * as alertsApi from "../api/alerts";
 
@@ -13,22 +14,34 @@ export function AlertQueuePage() {
   const { user } = useAuth();
   const [alerts, setAlerts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filters, setFilters] = useState({ status: "", severity: "" });
   const [selected, setSelected] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState("");
 
   const canGenerate = user?.role === "admin" || user?.role === "analyst";
 
   const load = useCallback(async () => {
     setLoading(true);
-    const data = await alertsApi.listAlerts({
-      status: filters.status || undefined,
-      severity: filters.severity || undefined,
-      limit: 100,
-    });
-    setAlerts(data);
-    setLoading(false);
+    setError(null);
+    try {
+      const data = await alertsApi.listAlerts({
+        status: filters.status || undefined,
+        severity: filters.severity || undefined,
+        limit: 100,
+      });
+      setAlerts(data);
+    } catch (err) {
+      setError(
+        err.response
+          ? `The server responded with an error (${err.response.status}).`
+          : "Couldn't reach the backend. Is it running?"
+      );
+    } finally {
+      setLoading(false);
+    }
   }, [filters]);
 
   useEffect(() => {
@@ -48,9 +61,16 @@ export function AlertQueuePage() {
 
   async function handleGenerate() {
     setGenerating(true);
+    setGenerateError("");
     try {
       await alertsApi.generateAlerts(10);
       await load();
+    } catch (err) {
+      setGenerateError(
+        err.response?.status === 403
+          ? "You don't have permission to generate alerts."
+          : "Couldn't generate alerts. Try again."
+      );
     } finally {
       setGenerating(false);
     }
@@ -70,15 +90,20 @@ export function AlertQueuePage() {
             </p>
           </div>
           {canGenerate && (
-            <button
-              onClick={handleGenerate}
-              disabled={generating}
-              className="flex items-center gap-2 text-sm px-3 py-2 rounded-md font-medium disabled:opacity-50"
-              style={{ backgroundColor: "var(--color-cyan)", color: "#2a1606" }}
-            >
-              <Plus size={15} />
-              {generating ? "Generating…" : "Generate alerts"}
-            </button>
+            <div className="text-right">
+              <button
+                onClick={handleGenerate}
+                disabled={generating}
+                className="flex items-center gap-2 text-sm px-3 py-2 rounded-md font-medium disabled:opacity-50"
+                style={{ backgroundColor: "var(--color-cyan)", color: "#2a1606" }}
+              >
+                <Plus size={15} />
+                {generating ? "Generating…" : "Generate alerts"}
+              </button>
+              {generateError && (
+                <p className="text-xs mt-1.5" style={{ color: "var(--color-critical)" }}>{generateError}</p>
+              )}
+            </div>
           )}
         </div>
 
@@ -106,7 +131,11 @@ export function AlertQueuePage() {
           )}
         </div>
 
-        <AlertTable alerts={alerts} onSelect={setSelected} loading={loading} />
+        {error ? (
+          <ErrorState message="Couldn't load alerts." detail={error} onRetry={load} />
+        ) : (
+          <AlertTable alerts={alerts} onSelect={setSelected} loading={loading} />
+        )}
       </main>
 
       {selected && (
