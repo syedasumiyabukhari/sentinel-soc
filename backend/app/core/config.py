@@ -23,7 +23,15 @@ class Settings(BaseSettings):
     ALERT_GENERATION_ENABLED: bool = True
     ALERT_GENERATION_INTERVAL_SECONDS: int = 15
 
-    CORS_ORIGINS: list = ["*"]  # tighten in production
+    # Comma-separated list of allowed origins, e.g. "https://sentinel.up.railway.app".
+    # Defaults to "*" for local development; set explicitly in production.
+    CORS_ORIGINS_RAW: str = os.getenv("CORS_ORIGINS", "*")
+
+    @property
+    def CORS_ORIGINS(self) -> list:
+        if self.CORS_ORIGINS_RAW.strip() == "*":
+            return ["*"]
+        return [origin.strip() for origin in self.CORS_ORIGINS_RAW.split(",") if origin.strip()]
 
     class Config:
         env_file = ".env"
