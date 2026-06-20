@@ -2,26 +2,32 @@ import { Radio } from "lucide-react";
 
 /**
  * A central "Sentinel" hub with project-themed emoji orbiting it on two
- * rings, each node spinning at its own radius, speed, and direction so
- * the motion reads as organic rather than a uniform clock mechanism.
+ * rings. Direction and speed are consistent *within* each ring - ring 1
+ * always clockwise, ring 2 always counter-clockwise - so the motion reads
+ * as one deliberate pattern rather than six nodes spinning independently.
  *
  * The 0x0 wrapper-div rotation trick needs `overflow: visible` explicitly -
  * without it, a zero-size container clips its children and the orbiting
  * nodes silently disappear even though they're animating correctly in the DOM.
  */
+const RING_DIRECTION = { 1: "normal", 2: "reverse" }; // 1 = clockwise, 2 = counter-clockwise
+const RING_DURATION = { 1: 20, 2: 28 }; // seconds per full revolution, same for every node on that ring
+
 const ORBIT_NODES = [
-  { emoji: "🛡️", label: "Severity scoring", ring: 1, angle: 0, duration: 18, direction: "normal" },
-  { emoji: "🌐", label: "IP reputation", ring: 2, angle: 50, duration: 26, direction: "reverse" },
-  { emoji: "📜", label: "Audit trail", ring: 1, angle: 140, duration: 21, direction: "reverse" },
-  { emoji: "📡", label: "Triage workflow", ring: 2, angle: 200, duration: 24, direction: "normal" },
-  { emoji: "🖥️", label: "Alert sources", ring: 1, angle: 250, duration: 16, direction: "normal" },
-  { emoji: "🔒", label: "2FA / auth", ring: 2, angle: 320, duration: 29, direction: "reverse" },
+  { emoji: "🛡️", label: "Severity scoring", ring: 1, angle: 0 },
+  { emoji: "🌐", label: "IP reputation", ring: 2, angle: 50 },
+  { emoji: "📜", label: "Audit trail", ring: 1, angle: 140 },
+  { emoji: "📡", label: "Triage workflow", ring: 2, angle: 200 },
+  { emoji: "🖥️", label: "Alert sources", ring: 1, angle: 250 },
+  { emoji: "🔒", label: "2FA / auth", ring: 2, angle: 320 },
 ];
 
 const RING_RADIUS = { 1: 92, 2: 142 };
 
-function OrbitNode({ emoji, label, ring, angle, duration, direction }) {
+function OrbitNode({ emoji, label, ring, angle }) {
   const radius = RING_RADIUS[ring];
+  const direction = RING_DIRECTION[ring];
+  const duration = RING_DURATION[ring];
   const counterDirection = direction === "reverse" ? "normal" : "reverse";
   return (
     <div
