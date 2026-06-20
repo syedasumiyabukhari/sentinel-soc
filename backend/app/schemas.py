@@ -105,6 +105,8 @@ class AlertOut(BaseModel):
     abuse_confidence_score: Optional[int]
     is_tor: Optional[str]
     total_reports: Optional[int]
+    asn: Optional[str] = None
+    isp: Optional[str] = None
     assigned_to_id: Optional[int]
     created_at: datetime
     updated_at: datetime
@@ -146,6 +148,41 @@ class AlertStatusUpdate(BaseModel):
 
 class AlertAssign(BaseModel):
     user_id: int
+
+
+class AlertHistoryEntry(BaseModel):
+    id: int
+    actor_username: Optional[str]
+    action: str
+    detail: Optional[str]
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class AlertCommentCreate(BaseModel):
+    body: str
+
+    @field_validator("body")
+    @classmethod
+    def body_not_empty(cls, v):
+        if not v.strip():
+            raise ValueError("comment cannot be empty")
+        if len(v) > 2000:
+            raise ValueError("comment is too long (max 2000 characters)")
+        return v
+
+
+class AlertCommentOut(BaseModel):
+    id: int
+    alert_id: int
+    author_username: Optional[str]
+    body: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
 
 
 class GenerateAlertsRequest(BaseModel):

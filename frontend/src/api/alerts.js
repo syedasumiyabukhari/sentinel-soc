@@ -38,6 +38,21 @@ export async function assignAlert(id, userId) {
   return data;
 }
 
+export async function getAlertHistory(id) {
+  const { data } = await api.get(`/api/alerts/${id}/history`);
+  return data;
+}
+
+export async function listAlertComments(id) {
+  const { data } = await api.get(`/api/alerts/${id}/comments`);
+  return data;
+}
+
+export async function addAlertComment(id, body) {
+  const { data } = await api.post(`/api/alerts/${id}/comments`, { body });
+  return data;
+}
+
 export async function deleteAlert(id) {
   await api.delete(`/api/alerts/${id}`);
 }

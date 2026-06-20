@@ -145,6 +145,8 @@ async def generate_alert(db: Session) -> Alert:
         abuse_confidence_score=reputation["abuse_confidence_score"],
         is_tor=reputation["is_tor"],
         total_reports=reputation["total_reports"],
+        asn=reputation.get("asn"),
+        isp=reputation.get("isp"),
         raw_event=json.dumps(raw_event),
     )
 

@@ -12,8 +12,18 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.core.security import get_current_user, require_role
 from app.models.alert import Alert
+from app.models.audit_log import AuditLog
+from app.models.alert_comment import AlertComment
 from app.models.user import User
-from app.schemas import AlertOut, AlertStatusUpdate, AlertAssign, GenerateAlertsRequest
+from app.schemas import (
+    AlertOut,
+    AlertStatusUpdate,
+    AlertAssign,
+    GenerateAlertsRequest,
+    AlertHistoryEntry,
+    AlertCommentCreate,
+    AlertCommentOut,
+)
 from app.services.alert_generator import generate_batch
 from app.services.audit_service import write_audit_log
 
@@ -100,6 +110,72 @@ def get_alert(alert_id: int, db: Session = Depends(get_db), current_user: User =
     if not alert:
         raise HTTPException(status_code=404, detail="Alert not found")
     return alert
+
+
+@router.get("/{alert_id}/history", response_model=list[AlertHistoryEntry])
+def get_alert_history(alert_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """
+    Status/assignment timeline for a single alert, built from the audit log
+    rather than a separate history table - every status change and assignment
+    is already audit-logged with target_type='alert' and target_id=<this id>,
+    so this is just a filtered, chronological view of that existing record.
+    """
+    alert = db.query(Alert).filter(Alert.id == alert_id).first()
+    if not alert:
+        raise HTTPException(status_code=404, detail="Alert not found")
+
+    entries = (
+        db.query(AuditLog)
+        .filter(AuditLog.target_type == "alert", AuditLog.target_id == alert_id)
+        .order_by(AuditLog.created_at.asc())
+        .all()
+    )
+    return entries
+
+
+@router.get("/{alert_id}/comments", response_model=list[AlertCommentOut])
+def list_alert_comments(alert_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    alert = db.query(Alert).filter(Alert.id == alert_id).first()
+    if not alert:
+        raise HTTPException(status_code=404, detail="Alert not found")
+
+    comments = (
+        db.query(AlertComment)
+        .filter(AlertComment.alert_id == alert_id)
+        .order_by(AlertComment.created_at.asc())
+        .all()
+    )
+    return comments
+
+
+@router.post("/{alert_id}/comments", response_model=AlertCommentOut, status_code=status.HTTP_201_CREATED)
+def add_alert_comment(
+    alert_id: int,
+    payload: AlertCommentCreate,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_role("admin", "analyst")),
+):
+    alert = db.query(Alert).filter(Alert.id == alert_id).first()
+    if not alert:
+        raise HTTPException(status_code=404, detail="Alert not found")
+
+    comment = AlertComment(
+        alert_id=alert_id,
+        author_id=current_user.id,
+        author_username=current_user.username,
+        body=payload.body,
+    )
+    db.add(comment)
+    db.commit()
+    db.refresh(comment)
+
+    write_audit_log(
+        db, action="alert_comment_added", actor=current_user, target_type="alert", target_id=alert_id,
+        detail=f"'{current_user.username}' commented on alert #{alert_id}",
+        ip_address=request.client.host if request.client else None,
+    )
+    return comment
 
 
 @router.post("/generate", response_model=list[AlertOut])

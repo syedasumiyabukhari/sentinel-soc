@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   ArrowLeft, Globe, Server, User as UserIcon, Hash, Shield,
-  ExternalLink, Clock, ScrollText,
+  ExternalLink, Clock, ScrollText, MessageSquare, Send,
 } from "lucide-react";
 import { Sidebar } from "../components/Sidebar";
 import { SeverityBadge } from "../components/SeverityBadge";
@@ -10,6 +10,7 @@ import { StatusPill, STATUS_TRANSITIONS, STATUS_LABELS } from "../components/Sta
 import { Skeleton, SkeletonTableRows } from "../components/Skeleton";
 import { ErrorState } from "../components/ErrorState";
 import { EmptyState } from "../components/EmptyState";
+import { useAuth } from "../context/AuthContext";
 import * as alertsApi from "../api/alerts";
 import * as auditApi from "../api/audit";
 
@@ -52,13 +53,21 @@ const ACTION_LABELS = {
 export function AlertDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [alert, setAlert] = useState(null);
   const [history, setHistory] = useState([]);
+  const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [historyLoading, setHistoryLoading] = useState(true);
+  const [commentsLoading, setCommentsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [updating, setUpdating] = useState(false);
   const [actionError, setActionError] = useState("");
+  const [commentBody, setCommentBody] = useState("");
+  const [commentBusy, setCommentBusy] = useState(false);
+  const [commentError, setCommentError] = useState("");
+
+  const canComment = user?.role === "admin" || user?.role === "analyst";
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -91,10 +100,38 @@ export function AlertDetailPage() {
     }
   }, [id]);
 
+  const loadComments = useCallback(async () => {
+    setCommentsLoading(true);
+    try {
+      const data = await alertsApi.listAlertComments(id);
+      setComments(data);
+    } catch {
+      setComments([]);
+    } finally {
+      setCommentsLoading(false);
+    }
+  }, [id]);
+
   useEffect(() => {
     load();
     loadHistory();
-  }, [load, loadHistory]);
+    loadComments();
+  }, [load, loadHistory, loadComments]);
+
+  async function handleAddComment(e) {
+    e.preventDefault();
+    setCommentError("");
+    setCommentBusy(true);
+    try {
+      const comment = await alertsApi.addAlertComment(id, commentBody);
+      setComments((prev) => [...prev, comment]);
+      setCommentBody("");
+    } catch (err) {
+      setCommentError(err.response?.data?.detail || "Couldn't post comment.");
+    } finally {
+      setCommentBusy(false);
+    }
+  }
 
   async function handleStatusChange(newStatus) {
     setUpdating(true);
@@ -345,6 +382,74 @@ export function AlertDetailPage() {
                     </div>
                   ))}
                 </div>
+              )}
+            </div>
+
+            {/* Comments */}
+            <div
+              className="rounded-md border p-4 mt-6"
+              style={{ borderColor: "var(--color-border)", backgroundColor: "var(--color-surface)" }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <MessageSquare size={14} style={{ color: "var(--color-cyan)" }} />
+                <p className="text-xs uppercase tracking-wide" style={{ color: "var(--color-text-faint)" }}>
+                  Comments
+                </p>
+              </div>
+
+              {commentsLoading ? (
+                <div className="space-y-2">
+                  <Skeleton height={14} />
+                  <Skeleton height={14} width="70%" />
+                </div>
+              ) : comments.length === 0 ? (
+                <p className="text-sm mb-3" style={{ color: "var(--color-text-faint)" }}>No comments yet.</p>
+              ) : (
+                <div className="space-y-3 mb-4">
+                  {comments.map((c) => (
+                    <div key={c.id} className="text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium" style={{ color: "var(--color-text)" }}>{c.author_username}</span>
+                        <span className="font-data text-xs" style={{ color: "var(--color-text-faint)" }}>
+                          {new Date(c.created_at).toLocaleString()}
+                        </span>
+                      </div>
+                      <p className="mt-0.5" style={{ color: "var(--color-text-muted)" }}>{c.body}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {canComment ? (
+                <form onSubmit={handleAddComment} className="flex items-start gap-2 pt-3 border-t" style={{ borderColor: "var(--color-border)" }}>
+                  <textarea
+                    value={commentBody}
+                    onChange={(e) => setCommentBody(e.target.value)}
+                    placeholder="Add a note about this alert…"
+                    rows={2}
+                    className="flex-1 text-sm px-3 py-2 rounded-md border resize-none"
+                    style={{
+                      borderColor: "var(--color-border-bright)",
+                      backgroundColor: "var(--color-bg)",
+                      color: "var(--color-text)",
+                    }}
+                  />
+                  <button
+                    type="submit"
+                    disabled={commentBusy || !commentBody.trim()}
+                    className="p-2 rounded-md disabled:opacity-50"
+                    style={{ backgroundColor: "var(--color-cyan)", color: "#2a1606" }}
+                  >
+                    <Send size={14} />
+                  </button>
+                </form>
+              ) : (
+                <p className="text-xs pt-3 border-t" style={{ color: "var(--color-text-faint)", borderColor: "var(--color-border)" }}>
+                  Viewer accounts can read comments but can't post new ones.
+                </p>
+              )}
+              {commentError && (
+                <p className="text-xs mt-2" style={{ color: "var(--color-critical)" }}>{commentError}</p>
               )}
             </div>
           </>

@@ -1,5 +1,6 @@
 from app.models.user import User
 from app.models.alert import Alert
 from app.models.audit_log import AuditLog
+from app.models.alert_comment import AlertComment
 
-__all__ = ["User", "Alert", "AuditLog"]
+__all__ = ["User", "Alert", "AuditLog", "AlertComment"]

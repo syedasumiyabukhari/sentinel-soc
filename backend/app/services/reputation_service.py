@@ -21,7 +21,24 @@ class ReputationResult(TypedDict):
     total_reports: int
     is_tor: str
     country_code: Optional[str]
+    asn: Optional[str]
+    isp: Optional[str]
     is_mock: bool
+
+
+# A small set of plausible-looking ASN/ISP pairs for mock data. Real AbuseIPDB
+# responses include both fields; these are just placeholders that look right,
+# not real registry data.
+_MOCK_ASN_POOL = [
+    ("AS13335", "Cloudflare, Inc."),
+    ("AS16509", "Amazon.com, Inc."),
+    ("AS15169", "Google LLC"),
+    ("AS8075", "Microsoft Corporation"),
+    ("AS24940", "Hetzner Online GmbH"),
+    ("AS14061", "DigitalOcean, LLC"),
+    ("AS9009", "M247 Europe SRL"),
+    ("AS49981", "WorldStream B.V."),
+]
 
 
 def _mock_reputation(ip_address: str) -> ReputationResult:
@@ -48,6 +65,7 @@ def _mock_reputation(ip_address: str) -> ReputationResult:
 
     is_tor = "true" if rng.random() < 0.07 else "false"
     country = rng.choice(["US", "CN", "RU", "DE", "BR", "IN", "NL", "VN", "FR", "GB", None])
+    asn, isp = rng.choice(_MOCK_ASN_POOL)
 
     return {
         "ip_address": ip_address,
@@ -55,6 +73,8 @@ def _mock_reputation(ip_address: str) -> ReputationResult:
         "total_reports": reports,
         "is_tor": is_tor,
         "country_code": country,
+        "asn": asn,
+        "isp": isp,
         "is_mock": True,
     }
 
@@ -87,6 +107,8 @@ async def check_ip_reputation(ip_address: str) -> ReputationResult:
                 "total_reports": data.get("totalReports", 0),
                 "is_tor": "true" if data.get("isTor") else "false",
                 "country_code": data.get("countryCode"),
+                "asn": f"AS{data['asn']}" if data.get("asn") else None,
+                "isp": data.get("isp"),
                 "is_mock": False,
             }
     except (httpx.HTTPError, httpx.TimeoutException, KeyError, ValueError):

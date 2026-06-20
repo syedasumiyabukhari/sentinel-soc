@@ -39,6 +39,8 @@ class Alert(Base):
     abuse_confidence_score = Column(Integer, nullable=True)  # 0-100
     is_tor = Column(String(8), nullable=True)  # "true"/"false"/"unknown"
     total_reports = Column(Integer, nullable=True)
+    asn = Column(String(20), nullable=True)  # e.g. "AS13335"
+    isp = Column(String(120), nullable=True)  # e.g. "Cloudflare, Inc."
 
     raw_event = Column(Text, nullable=True)  # JSON blob of the simulated raw log line
 
