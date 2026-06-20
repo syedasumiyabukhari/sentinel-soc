@@ -58,12 +58,17 @@ export function AuthProvider({ children }) {
 
   const signUp = useCallback(async (payload) => {
     await authApi.register(payload);
-    return authApi.login(payload.username, payload.password).then((data) => {
-      localStorage.setItem("sentinel_token", data.access_token);
-      localStorage.setItem("sentinel_user", JSON.stringify(data.user));
-      setUser(data.user);
-      return data.user;
-    });
+    const data = await authApi.login(payload.username, payload.password);
+    if (data.requires_2fa) {
+      // New accounts never have 2FA enabled yet (it's opt-in after registration),
+      // so this should be unreachable - but if it ever happens, fail loudly
+      // instead of silently writing an undefined user into state.
+      throw new Error("Unexpected: a brand new account already requires 2FA.");
+    }
+    localStorage.setItem("sentinel_token", data.access_token);
+    localStorage.setItem("sentinel_user", JSON.stringify(data.user));
+    setUser(data.user);
+    return data.user;
   }, []);
 
   const signOut = useCallback(() => {

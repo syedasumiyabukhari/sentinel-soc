@@ -1,6 +1,8 @@
 """
 Authentication endpoints: register, login (with optional 2FA step), 2FA setup.
 """
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -32,6 +34,9 @@ from app.schemas import (
 from app.services.audit_service import write_audit_log
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+
+MAX_FAILED_LOGIN_ATTEMPTS = 5
+LOCKOUT_MINUTES = 15
 
 
 @router.post("/register", response_model=UserOut, status_code=status.HTTP_201_CREATED)
@@ -73,12 +78,45 @@ def register(payload: UserCreate, request: Request, db: Session = Depends(get_db
 @router.post("/login", response_model=None)
 def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == form_data.username).first()
+
+    # Check lockout before even verifying the password, so a locked-out
+    # attacker can't keep guessing during the lockout window.
+    # SQLite doesn't store timezone info, so locked_until comes back naive -
+    # treat it as UTC explicitly before comparing to an aware "now".
+    if user and user.locked_until:
+        locked_until = user.locked_until
+        if locked_until.tzinfo is None:
+            locked_until = locked_until.replace(tzinfo=timezone.utc)
+        if locked_until > datetime.now(timezone.utc):
+            remaining = int((locked_until - datetime.now(timezone.utc)).total_seconds() / 60) + 1
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"Too many failed attempts. Try again in {remaining} minute(s).",
+            )
+
     if not user or not verify_password(form_data.password, user.hashed_password):
+        if user:
+            user.failed_login_attempts = (user.failed_login_attempts or 0) + 1
+            if user.failed_login_attempts >= MAX_FAILED_LOGIN_ATTEMPTS:
+                user.locked_until = datetime.now(timezone.utc) + timedelta(minutes=LOCKOUT_MINUTES)
+                write_audit_log(
+                    db, action="account_locked", actor=user, target_type="auth",
+                    detail=f"Account '{user.username}' locked after {user.failed_login_attempts} failed login attempts",
+                    ip_address=request.client.host if request.client else None,
+                )
+            db.commit()
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    # Successful password check - reset the failed-attempt counter.
+    if user.failed_login_attempts:
+        user.failed_login_attempts = 0
+        user.locked_until = None
+        db.commit()
+
     if not user.is_active:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User account is inactive")
 
