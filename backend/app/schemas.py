@@ -4,7 +4,7 @@ Pydantic schemas for request/response bodies.
 import re
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, field_validator, model_validator
 
 
 # ---------- Auth ----------
@@ -109,6 +109,25 @@ class AlertOut(BaseModel):
     created_at: datetime
     updated_at: datetime
     closed_at: Optional[datetime]
+
+    # Computed, not stored - derived from alert_type at serialization time
+    mitre_technique_id: Optional[str] = None
+    mitre_technique_name: Optional[str] = None
+    mitre_tactic_id: Optional[str] = None
+    mitre_tactic_name: Optional[str] = None
+    mitre_url: Optional[str] = None
+
+    @model_validator(mode="after")
+    def populate_mitre(self):
+        from app.services.mitre_mapping import get_mitre_mapping
+        mapping = get_mitre_mapping(self.alert_type)
+        if mapping:
+            self.mitre_technique_id = mapping["technique_id"]
+            self.mitre_technique_name = mapping["technique_name"]
+            self.mitre_tactic_id = mapping["tactic_id"]
+            self.mitre_tactic_name = mapping["tactic_name"]
+            self.mitre_url = mapping["url"]
+        return self
 
     class Config:
         from_attributes = True

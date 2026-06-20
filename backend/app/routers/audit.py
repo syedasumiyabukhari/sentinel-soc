@@ -18,15 +18,18 @@ router = APIRouter(prefix="/api/audit-logs", tags=["audit"])
 def list_audit_logs(
     action: Optional[str] = Query(None),
     target_type: Optional[str] = Query(None),
+    target_id: Optional[int] = Query(None),
     limit: int = Query(100, le=500),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_role("admin", "analyst")),
+    current_user: User = Depends(require_role("admin", "analyst", "viewer")),
 ):
     q = db.query(AuditLog)
     if action:
         q = q.filter(AuditLog.action == action)
     if target_type:
         q = q.filter(AuditLog.target_type == target_type)
+    if target_id is not None:
+        q = q.filter(AuditLog.target_id == target_id)
 
     return q.order_by(AuditLog.created_at.desc()).offset(offset).limit(limit).all()

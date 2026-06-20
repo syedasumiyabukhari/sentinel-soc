@@ -71,7 +71,27 @@ export function AlertTable({ alerts, onSelect, loading }) {
                 </p>
               </td>
               <td className="px-4 py-3 font-data text-xs" style={{ color: "var(--color-text-muted)" }}>
-                {alert.source_ip || "—"}
+                <div className="flex items-center gap-2">
+                  <span>{alert.source_ip || "—"}</span>
+                  {alert.abuse_confidence_score !== null && alert.abuse_confidence_score !== undefined && alert.abuse_confidence_score >= 50 && (
+                    <span
+                      title={`AbuseIPDB confidence: ${alert.abuse_confidence_score}%`}
+                      className="px-1.5 py-0.5 rounded-sm text-[10px] font-semibold"
+                      style={{ backgroundColor: "rgba(214,69,63,0.12)", color: "var(--color-critical)" }}
+                    >
+                      {alert.abuse_confidence_score}%
+                    </span>
+                  )}
+                  {alert.is_tor === "true" && (
+                    <span
+                      title="TOR exit node"
+                      className="px-1.5 py-0.5 rounded-sm text-[10px] font-semibold"
+                      style={{ backgroundColor: "rgba(217,168,56,0.12)", color: "var(--color-medium)" }}
+                    >
+                      TOR
+                    </span>
+                  )}
+                </div>
               </td>
               <td className="px-4 py-3">
                 <StatusPill status={alert.status} />

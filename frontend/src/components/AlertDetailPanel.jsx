@@ -1,4 +1,5 @@
-import { X, Globe, Server, User as UserIcon, ShieldQuestion } from "lucide-react";
+import { X, Globe, Server, User as UserIcon, ShieldQuestion, ArrowUpRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import { SeverityBadge } from "./SeverityBadge";
 import { StatusPill, STATUS_TRANSITIONS, STATUS_LABELS } from "./StatusPill";
 
@@ -45,6 +46,14 @@ export function AlertDetailPanel({ alert, onClose, onStatusChange, updating }) {
             <p className="font-data text-xs mt-1" style={{ color: "var(--color-text-faint)" }}>
               ALERT #{alert.id} · {new Date(alert.created_at).toLocaleString()}
             </p>
+            <Link
+              to={`/alerts/${alert.id}`}
+              className="inline-flex items-center gap-1 text-xs mt-2"
+              style={{ color: "var(--color-cyan)" }}
+            >
+              View full details
+              <ArrowUpRight size={12} />
+            </Link>
           </div>
           <button
             onClick={onClose}

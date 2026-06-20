@@ -5,6 +5,7 @@ import { PortalSelectPage } from "./pages/PortalSelectPage";
 import { LoginPage } from "./pages/LoginPage";
 import { OverviewPage } from "./pages/OverviewPage";
 import { AlertQueuePage } from "./pages/AlertQueuePage";
+import { AlertDetailPage } from "./pages/AlertDetailPage";
 import { AuditLogPage } from "./pages/AuditLogPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { ManageUsersPage } from "./pages/ManageUsersPage";
@@ -46,6 +47,7 @@ function AppRoutes() {
       <Route path="/register" element={<PublicOnlyRoute><LoginPage /></PublicOnlyRoute>} />
       <Route path="/dashboard" element={<ProtectedRoute><OverviewPage /></ProtectedRoute>} />
       <Route path="/alerts" element={<ProtectedRoute><AlertQueuePage /></ProtectedRoute>} />
+      <Route path="/alerts/:id" element={<ProtectedRoute><AlertDetailPage /></ProtectedRoute>} />
       <Route path="/audit" element={<ProtectedRoute><AuditLogPage /></ProtectedRoute>} />
       <Route path="/settings" element={<ProtectedRoute><SettingsPage /></ProtectedRoute>} />
       <Route path="/users" element={<AdminRoute><ManageUsersPage /></AdminRoute>} />
