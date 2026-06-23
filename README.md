@@ -1,4 +1,5 @@
 # Sentinel — SOC Alert Triage & Incident Response Dashboard
+**Live demo:** https://jubilant-art-production-0fa4.up.railway.app
 
 Sentinel is a security operations dashboard for triaging alerts the way a real SOC analyst would: alerts come in, get scored for severity, get enriched with IP reputation data and MITRE ATT&CK mapping, and move through a triage workflow from first detection to resolution — with every action recorded in an audit trail.
 
